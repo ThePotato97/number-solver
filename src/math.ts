@@ -20,7 +20,7 @@ type Step =
       rhs: number;
     };
 
-type Solution = {
+export type Solution = {
   steps: Step[];
   numbers: number[];
 };

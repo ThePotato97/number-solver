@@ -9,12 +9,16 @@ import {
   IconButton,
   Chip,
   Typography,
+  Collapse,
 } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import AddIcon from "@mui/icons-material/Add";
-import { format, solve } from "./math";
+import { TransitionGroup } from "react-transition-group";
+import { Solution, format, solve } from "./math";
+
 function App() {
   const [number, setNumber] = useState<string>("");
-  const [answer, setAnswer] = useState<string[]>([]);
+  const [answer, setAnswer] = useState<Solution>();
   const [numbers, setNumbers] = useState<Array<number>>([]);
 
   const calculateNumber = (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,8 +31,9 @@ function App() {
     console.log(targetNumber);
     if (isNaN(targetNumber)) return;
     const solved = solve(targetNumber, numbers);
-    if (!solved) return setAnswer(["No solution found"]);
-    setAnswer(format(solved));
+    console.log(solved);
+    if (!solved) return;
+    setAnswer(solved);
   };
 
   const handleAddNumber = () => {
@@ -60,6 +65,10 @@ function App() {
         <Paper
           sx={{
             p: 3,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <form onSubmit={calculateNumber}>
@@ -124,19 +133,54 @@ function App() {
               <Button type="submit" variant="contained">
                 Solve
               </Button>
-              {answer.map((ans, i) => {
-                return (
-                  <Typography
-                    key={`${ans}-${i}`}
-                    textAlign={"center"}
-                    variant="h2"
-                  >
-                    {ans}
-                  </Typography>
-                );
-              })}
             </FormControl>
           </form>
+          <TransitionGroup>
+            {answer?.steps.map(({ lhs, op, rhs }, i) => {
+              const result = eval(`${lhs} ${op} ${rhs}`);
+              return (
+                <Collapse key={`${lhs} ${op} ${rhs} ${i}`}>
+                  <Paper
+                    elevation={2}
+                    sx={{ flexGrow: 1, minWidth: "550px", mt: 5 }}
+                  >
+                    <Grid container spacing={3}>
+                      <Grid xs={3}>
+                        <Typography textAlign="center" variant="h2">
+                          {lhs}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={1}>
+                        <Typography textAlign="center" variant="h2">
+                          {op}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={3}>
+                        <Typography textAlign="center" variant="h2">
+                          {rhs}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={1}>
+                        <Typography textAlign="center" variant="h2">
+                          {"="}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={4}>
+                        <Typography textAlign="center" variant="h2">
+                          {result}
+                        </Typography>
+                      </Grid>
+                      {/* {ans.split(" ").map((word) => (
+                      <Typography key={`${ans}-${i}`} variant="h2">
+                        {word}
+                      </Typography>
+                    ))} */}
+                    </Grid>
+                  </Paper>
+                </Collapse>
+              );
+            })}
+          </TransitionGroup>
         </Paper>
       </Box>
     </>
