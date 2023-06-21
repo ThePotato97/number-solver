@@ -14,7 +14,7 @@ import {
 import Grid from "@mui/material/Unstable_Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import { TransitionGroup } from "react-transition-group";
-import { Solution, format, solve } from "./math";
+import { Solution, solve } from "./math";
 
 function App() {
   const [number, setNumber] = useState<string>("");
